@@ -87,6 +87,18 @@ Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gac
 There is a command to initialize the file, just do `gachette init_config` and it will create the file (with some comments) if it doesn't exist.
 
 
+Usage (CLI)
+===========
+You can also use Gachette programmatically as a python library.
+
+    # to checkout a specific branch and build package out of it:
+    from gachette.api import WorkingCopy
+
+    # to create a stack and add packages to it:
+    from gachette.api import Stack
+
+Look at the file `gachette/fabfile.py` for usage examples.
+
 Todo
 ====
 * Able to create nested settings from the .gachetterc file (for project configuration).
