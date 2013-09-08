@@ -3,9 +3,8 @@ from setuptools import setup
 
 from gachette import get_version
 
-
 setup(
-    name = "gachette",
+    name = "la-gachette",
     packages = [ 'gachette', ],
     version = get_version(),
     url = '',
