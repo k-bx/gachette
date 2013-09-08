@@ -40,7 +40,8 @@ env.rcfile = os.path.expanduser("~/.gachetterc")
 settings = load_settings(env.rcfile)
 if settings:
     env.update(settings)
-    env.hosts = [env.build_host]
+    if 'build_host' in env:
+        env.hosts = [env.build_host]
 
 @task
 def init_config():
