@@ -2,9 +2,11 @@
 #code: utf-8
 
 import os
+import shutil
 import fabric.main
 from fabric.api import task, env
 from fabric.main import load_settings
+from fabric.utils import abort, puts
 
 from gachette.working_copy import WorkingCopy
 from gachette.stack import Stack
@@ -40,6 +42,18 @@ if settings:
     env.update(settings)
     env.hosts = [env.build_host]
 
+@task
+def init_config():
+    """
+    Create the .gachetterc if not there.
+    """
+    if os.path.exists(env.rcfile):
+        abort("""You already have a %s config file.
+        Before creating a new version (with maybe udpated comments), you should back it up and remove it.""" % env.rcfile)
+
+    shutil.copy("gachette/templates/gachetterc.txt", env.rcfile)
+    puts("""Congrats! you now have a configuration file available for you to edit!
+        Just open %s and follow the instruction.""" % env.rcfile)
 
 @task
 def version():

@@ -84,6 +84,8 @@ For example:
 
 Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gachette`.
 
+There is a command to initialize the file, just do `gachette init_config` and it will create the file (with some comments) if it doesn't exist.
+
 
 Todo
 ====
