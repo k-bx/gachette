@@ -33,9 +33,9 @@ only the specified version of the packages are then installed.
 
 For example:
 
-    Stack 123 contains the config package version v1.0.0 and application package v2.0.0. The next stack, named 124, will
-    contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
-    of the configuration works with the new application.
+Stack 123 contains the config package version v1.0.0 and application package v2.0.0. The next stack, named 124, will
+contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
+of the configuration works with the new application.
 
 Usage
 =====
@@ -50,11 +50,6 @@ Gachette is wrapping around some Fabric scripts. To see the list of commands ava
         show_config   Dummp settings.
         stack_create  Create a new stack. From old one if specified.
         version
-
-The workflow is simple, first `prepare` the working copy of the project you want to create packages from.
-Then trigger the `build`. Once the packages are finished, call manually `add_to_stack` if you didn't specify
-the webcallback option in the `build` command. The callback will be sent after each packages is built; if it is sent
-to gachette web server, it will launch the `add_to_stack` action.
 
 First we create the stack in a certain location. Note that the stack can be anything (semantic version or tag/name):
 
