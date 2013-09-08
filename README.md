@@ -1,6 +1,7 @@
 gachette
 ========
 
+[![Build Status](https://travis-ci.org/ops-hero/gachette.png?branch=master)](https://travis-ci.org/ops-hero/gachette)
 
 Python module to setup working copy of specific branch for a project, launch build of packages via `trebuchet` and attach the packages to a specific stack, ready for deployment. This can be used from the CLI or programatically as a python library.
 This will trigger the process on remote build machines, by using `fabric`.
