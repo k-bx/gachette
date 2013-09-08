@@ -4,6 +4,7 @@
 import os
 import fabric.main
 from fabric.api import task, env
+from fabric.main import load_settings
 
 from gachette.working_copy import WorkingCopy
 from gachette.stack import Stack
@@ -32,8 +33,13 @@ Now adding a package to the stack. We need to specify the package information as
 # allow the usage of ssh config file by fabric
 env.use_ssh_config = True
 
-if hasattr(env, "BUILD_HOST"):
-    env.host_string = env.BUILD_HOST[1:-1]
+# load the rc file (needed hack: https://github.com/fabric/fabric/pull/586)
+env.rcfile = os.path.expanduser("~/.gachetterc")
+settings = load_settings(env.rcfile)
+if settings:
+    env.update(settings)
+    env.hosts = [env.build_host]
+
 
 @task
 def version():
@@ -119,9 +125,12 @@ def main():
     Allow the execution of the fabfile in standalone.
     even as entry_point after installation via setup.py.
     """
+    # locate the fabfile
     current_file = os.path.abspath(__file__)
     if current_file[-1] == "c":
         current_file = current_file[:-1]
+
+    # launch fabric main function
     fabric.main.main([current_file])
 
 

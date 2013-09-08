@@ -38,8 +38,8 @@ Stack 123 contains the config package version v1.0.0 and application package v2.
 contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
 of the configuration works with the new application.
 
-Usage
-=====
+Usage (CLI)
+===========
 Gachette is wrapping around some Fabric scripts. To see the list of commands available, run this:
 
     $ gachette -l
@@ -71,8 +71,23 @@ Now adding a package to the stack. We need to specify the package information as
     gachette -H hero@192.168.1.5 add_to_stack:dh-secret-sauce-live,1.0.0,dh-secret-sauce-live-1.0.0-all.deb,/var/gachette,foobar1
 
 
+Configuration (CLI)
+===================
+To avoid repeating settings, you can use a dotted configuration file `~/.gachetterc`. It is based on the Fabric one, you can see
+the documentation there: http://fabric.readthedocs.org/en/latest/usage/fab.html#settings-files
+
+For example:
+
+    $ cat ~/.gachetterc 
+    user=vagrant
+    build_host=0.0.0.0
+
+Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gachette`.
+
+
 Todo
 ====
+* Able to create nested settings from the .gachetterc file (for project configuration).
 * handle version by using the git commit hash.
 * error handling.
 * link the package creation and the stack addition (other than webcallback).
