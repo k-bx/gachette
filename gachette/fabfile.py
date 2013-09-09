@@ -62,11 +62,11 @@ def version():
 
 
 @task
-def stack_create(name, target_folder, from_stack=None):
+def stack_create(name, meta_path, from_stack=None):
     """
     Create a new stack. From old one if specified.
     """
-    new_stack = Stack(name, target_folder=target_folder)
+    new_stack = Stack(name, meta_path=meta_path)
 
     if not new_stack.is_persisted():
         if from_stack:
@@ -91,7 +91,7 @@ def prepare(name, url=None, branch='master'):
 
 @task
 def build(name,
-          output_path,
+          debs_path,
           path_to_missile=None,
           app_version=None,
           env_version=None,
@@ -100,7 +100,7 @@ def build(name,
     """
     Build the package for the working copy remotely via trebuchet.
     <name> of the working copy folder.
-    <output_path> path to where the DEB package should be created into.
+    <debs_path> path to where the DEB package should be created into.
     <path_to_missile> relative path to the missile file for trebuchet
     <app_version> version specific for the application package built.
     <env_version> version specific for the lib/environment package built.
@@ -109,20 +109,20 @@ def build(name,
     """
     wc = WorkingCopy(name)
     wc.set_version(app=app_version, env=env_version, service=service_version)
-    wc.build(output_path, path_to_missile, webcallback)
+    wc.build(debs_path, path_to_missile, webcallback)
 
 
 @task
-def add_to_stack(name, version, file_name, target_folder, stack_version=None):
+def add_to_stack(name, version, file_name, meta_path, stack_version):
     """
     Add created package to stack and reference packages.
     <name> actual name of the package.
     <version> version of the package.
     <file_name> exact file_name of the package (versioned, architecture...).
-    <target_folder> path to the stacks
+    <meta_path> path to the stacks and other meta information related to package
     <stack_version> version of the stack to attach the package to.
     """
-    stack = Stack(stack_version, target_folder=target_folder)
+    stack = Stack(stack_version, meta_path=meta_path)
     stack.add_package(name, version, file_name)
 
 

@@ -6,11 +6,11 @@ class Stack(object):
     """
     Representation of a stack of projects/services of the build server.
     """
-    def __init__(self, stack_version, operator=None, target_folder=None):
+    def __init__(self, stack_version, operator=None, meta_path=None):
         self.version = stack_version
 
         if operator is None:
-            self.operator = StackOperator(target_folder)
+            self.operator = StackOperator(meta_path)
         else:
             self.operator = operator
 
