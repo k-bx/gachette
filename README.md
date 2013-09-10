@@ -38,6 +38,7 @@ Stack 123 contains the config package version v1.0.0 and application package v2.
 contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
 of the configuration works with the new application.
 
+
 Usage (CLI)
 ===========
 Gachette is wrapping around some Fabric scripts. To see the list of commands available, run this:
@@ -96,8 +97,25 @@ And it will generate a key `projects` with this dictionary as a value:
     {'test_config': {'url': 'git...'}, 'test_application': {'url': 'git...'}}
 
 
-Usage (CLI)
-===========
+
+Quick usage (CLI)
+=================
+Once you have your configuration well setup (projects..., meta_path, debs_path), you can start using the `quick` command:
+
+    $ gachette quick:0.0.1,test_application
+    $ gachette quick:0.0.1,test_config,fix-option
+
+This will do the following:
+* check out the master (or any branch specified) for the project `test_app`; the url is taken from the configuration as `projects.test_app.url`.
+* build the packages into `debs_path` folder (coming from the config).
+* use the git commit hash as the version of the package (add the branch if specified).
+* add the packages built to the stack (in the `meta_path` specified in the config).
+
+Note that the stack need to be setup before hand via `stack_create`.
+
+
+Usage (as a library)
+====================
 You can also use Gachette programmatically as a python library.
 
     # to checkout a specific branch and build package out of it:
