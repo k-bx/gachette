@@ -86,6 +86,15 @@ Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gac
 
 There is a command to initialize the file, just do `gachette init_config` and it will create the file (with some comments) if it doesn't exist.
 
+The configuration supports a dotted notation, so you can do:
+
+    projects.test_config.url=git@github.com:ops-hero/test_config.git
+    projects.test_application.url=git@github.com:ops-hero/test_application.git
+
+And it will generate a key `projects` with this dictionary as a value:
+
+    {'test_config': {'url': 'git...'}, 'test_application': {'url': 'git...'}}
+
 
 Usage (CLI)
 ===========
