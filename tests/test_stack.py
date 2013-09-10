@@ -6,7 +6,7 @@ from gachette.stack import Stack
 
 class StackTest(unittest.TestCase):
     def setUp(self):
-        self.stack = Stack('1.0.0', target_folder='/var/gachette')
+        self.stack = Stack('1.0.0', meta_path='/var/gachette')
 
     def tearDown(self):
         self.stack = None

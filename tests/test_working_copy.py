@@ -5,6 +5,30 @@ import mock
 from gachette.working_copy import WorkingCopy
 
 
+class GitVersionTest(unittest.TestCase):
+    def setUp(self):
+        self.wc = WorkingCopy("version_test")
+
+    def tearDown(self):
+        self.wc = None
+
+    @mock.patch('gachette.working_copy.get_current_git_hash', return_value="1A2B3C4D")
+    def test_basic(self, git_hash_mock):
+        version = self.wc.get_version_from_git()
+        self.assertEqual(version,
+                        '0.0.1rev1A2B3C4D',
+                        "Wrong version given %s" % version)
+
+        version = self.wc.get_version_from_git(suffix="foo")
+        self.assertEqual(version,
+                        '0.0.1rev1A2B3C4D-foo',
+                        "Wrong version given %s" % version)
+
+        version = self.wc.get_version_from_git(suffix="foo_bar")
+        self.assertEqual(version,
+                        '0.0.1rev1A2B3C4D-foo-bar',
+                        "Wrong version given %s" % version)
+
 class VersionTest(unittest.TestCase):
     def setUp(self):
         self.wc = WorkingCopy("version_test")

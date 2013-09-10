@@ -6,3 +6,25 @@
 
 # Host where the build are going to be launched.
 # build_host=192.168.1.1
+
+# Path where the debian packages will be stored after building.
+# To be used by the delivery mechanism (web).
+#debs_path=/var/gachette/debs
+
+# Path where the meta info of the debian packages and stack will
+# be stored after building (stacks, packages subfolder).
+# To be used by the delivery mechanism (web).
+#meta_path=/var/gachette
+
+# Projects directive:
+# For each specific project you can define a couple of variables,
+# so that there is no need to type them over and over again.
+# Just use a dotted notation and it will appear as nested in the
+# env settings. You can then create as many as you want.
+# 
+# url which will point to the github repo
+# path_to_missile which will point to the path to the missile file in the project
+#
+# Example where <foo> is the arbitrary name of the project.
+# projects.<foo>.url=<repo url of the project>
+# projects.<foo>.path_to_missile=.missile.yml

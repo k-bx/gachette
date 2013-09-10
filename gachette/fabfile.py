@@ -11,6 +11,7 @@ from fabric.utils import abort, puts
 from gachette.working_copy import WorkingCopy
 from gachette.stack import Stack
 from gachette import get_version
+from gachette.utils import expand_dotted_keys
 
 """
 Usage for a simple application repo. First we create the stack in a certain location:
@@ -39,6 +40,8 @@ env.use_ssh_config = True
 env.rcfile = os.path.expanduser("~/.gachetterc")
 settings = load_settings(env.rcfile)
 if settings:
+    # expand the dotted keys: {"foo.bar":5} => {"foo": {"bar": 5}} 
+    settings = expand_dotted_keys(settings)
     env.update(settings)
     if 'build_host' in env:
         env.hosts = [env.build_host]
@@ -62,10 +65,13 @@ def version():
 
 
 @task
-def stack_create(name, meta_path, from_stack=None):
+def stack_create(name, meta_path=None, from_stack=None):
     """
     Create a new stack. From old one if specified.
     """
+    # get the meta_path from .gachetterc
+    meta_path = meta_path if 'meta_path' not in env else env.meta_path
+    
     new_stack = Stack(name, meta_path=meta_path)
 
     if not new_stack.is_persisted():
@@ -91,7 +97,7 @@ def prepare(name, url=None, branch='master'):
 
 @task
 def build(name,
-          debs_path,
+          debs_path=None,
           path_to_missile=None,
           app_version=None,
           env_version=None,
@@ -107,6 +113,12 @@ def build(name,
     <service_version> version specific for the services packages built.
     <webcallback> web URI to send Trebuchet callbacks to.
     """
+    # Get value from .gachetterc
+    debs_path = debs_path if 'debs_path' not in env else env.debs_path
+    if debs_path is None:
+        abort("""
+            Either specify the debs_path in your call or add it to the .gachetterc file.""")
+
     wc = WorkingCopy(name)
     wc.set_version(app=app_version, env=env_version, service=service_version)
     wc.build(debs_path, path_to_missile, webcallback)
@@ -122,6 +134,9 @@ def add_to_stack(name, version, file_name, meta_path, stack_version):
     <meta_path> path to the stacks and other meta information related to package
     <stack_version> version of the stack to attach the package to.
     """
+    # get the meta_path from .gachetterc
+    meta_path = meta_path if 'meta_path' not in env else env.meta_path
+    
     stack = Stack(stack_version, meta_path=meta_path)
     stack.add_package(name, version, file_name)
 
@@ -133,6 +148,55 @@ def show_config():
     """
     for key in sorted(env.iterkeys()):
         print "%s: %s" % (key, env[key])
+
+
+@task
+def quick(stack_version, project_name, branch="master", url=None, debs_path=None, meta_path=None):
+    """
+    One-command to build and add to stack a specific branch.
+    Depends heavily on pre-configuration via `.gachetterc`.
+    Package version are set from Git commit.
+
+    <stack_version> version of the stack to attach the package to.
+    <project_name> name of the project.
+    <branch> is the branch to actually checkout.
+    <url> is the url of the repo in github.
+    <debs_path> path to where the DEB package should be created into.
+    <meta_path> path to the stacks and other meta information related to package
+    """
+    # Get value from .gachetterc
+    meta_path = meta_path if 'meta_path' not in env else env.meta_path
+    debs_path = debs_path if 'debs_path' not in env else env.debs_path
+
+    # Get value for the project, complain otherwise
+    if 'projects' not in env:
+        abort("Please enable create a projects directive in .gachetterc for at least 1 project: `projects.foo.url=git@github:bar/foo.git`")
+    if project_name not in env.projects:
+        abort("Please enable the projects directive for this specific project: `projects.%s.url=...`" % project_name)
+    url = env.projects[project_name]['url']
+    path_to_missile = None if 'path_to_missile' not in env.projects[project_name] else env.projects[project_name]['path_to_missile']
+    name = project_name if branch is None else project_name+"_"+branch
+
+    # use existing stack only (create one manually)
+    new_stack = Stack(stack_version, meta_path=meta_path)
+    if not new_stack.is_persisted():
+        abort("""Please create a new stack first, using: `gachette stack_create`""")
+
+    # Checkout specific branch and build
+    wc = WorkingCopy(name)
+    wc.prepare_environment()
+    wc.checkout_working_copy(url, branch)
+
+    # set version based on the git commit
+    suffix = "" if branch is None else branch
+    version = wc.get_version_from_git(suffix=suffix)
+    wc.set_version(app=version, env=version, service=version)
+
+    results = wc.build(debs_path, path_to_missile)
+    print "results: ", results
+    # TODO extract package build results properly
+    for item in results:
+        new_stack.add_package(item['name'], item['version'], item['file_name'])
 
 
 def main():
