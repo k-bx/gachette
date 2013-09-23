@@ -96,7 +96,7 @@ And it will generate a key `projects` with this dictionary as a value:
 
     {'test_config': {'url': 'git...'}, 'test_application': {'url': 'git...'}}
 
-
+The default value are for connecting with a Vagrant VM (ip to be defined).
 
 Quick usage (CLI)
 =================
