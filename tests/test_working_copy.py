@@ -2,7 +2,7 @@ import os
 import unittest
 import mock
 
-from gachette.working_copy import WorkingCopy
+from gachette.lib.working_copy import WorkingCopy
 
 
 class GitVersionTest(unittest.TestCase):

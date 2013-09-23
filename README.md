@@ -124,7 +124,14 @@ You can also use Gachette programmatically as a python library.
     # to create a stack and add packages to it:
     from gachette.api import Stack
 
-Look at the file `gachette/fabfile.py` for usage examples.
+Look at the file `gachette/main.py` for usage examples.
+
+Usage (CLI locally, for testing)
+================================
+Before installing the entry point, you can test the commands like this:
+
+    $ workon gachette
+    $ gachette/main.py -l
 
 Todo
 ====

@@ -8,10 +8,10 @@ from fabric.api import task, env
 from fabric.main import load_settings
 from fabric.utils import abort, puts
 
-from gachette.working_copy import WorkingCopy
-from gachette.stack import Stack
-from gachette import get_version
-from gachette.utils import expand_dotted_keys
+from lib.working_copy import WorkingCopy
+from lib.stack import Stack
+from lib import get_version
+from lib.utils import expand_dotted_keys
 
 """
 Usage for a simple application repo. First we create the stack in a certain location:
@@ -33,8 +33,6 @@ Now adding a package to the stack. We need to specify the package information as
 
 """
 
-# allow the usage of ssh config file by fabric
-env.use_ssh_config = True
 
 # load the rc file (needed hack: https://github.com/fabric/fabric/pull/586)
 env.rcfile = os.path.expanduser("~/.gachetterc")
@@ -45,6 +43,10 @@ if settings:
     env.update(settings)
     if 'build_host' in env:
         env.hosts = [env.build_host]
+
+# allow the usage of ssh config file by fabric
+env.use_ssh_config = True
+env.forward_agent = True
 
 @task
 def init_config():

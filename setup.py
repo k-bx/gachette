@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-from gachette import get_version
+from gachette.lib import get_version
 
 setup(
     name = "la-gachette",
@@ -17,7 +17,7 @@ setup(
     include_package_data = True,
     entry_points = {
         "console_scripts" : [ "gachette = "
-            "gachette.fabfile:main"]
+            "gachette.main:main"]
     },
     classifiers = ['Development Status :: 3 - Alpha',
                    'Intended Audience :: Information Technology',

@@ -1,6 +1,6 @@
 import unittest
 
-from gachette.utils import expand_dotted_keys, dict_tuple_dotted, deep_merge
+from gachette.lib.utils import expand_dotted_keys, dict_tuple_dotted, deep_merge
 
 
 class DottedTransformTest(unittest.TestCase):

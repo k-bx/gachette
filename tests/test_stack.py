@@ -1,7 +1,7 @@
 import unittest
 import mock
 
-from gachette.stack import Stack
+from gachette.lib.stack import Stack
 
 
 class StackTest(unittest.TestCase):
