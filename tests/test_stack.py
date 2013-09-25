@@ -11,7 +11,7 @@ class StackTest(unittest.TestCase):
     def tearDown(self):
         self.stack = None
 
-    @mock.patch('gachette.stack.run')
+    @mock.patch('gachette.lib.stack.run')
     def test_stack(self, stack_run_mock):
         name = 'app'
         version = '1.1.1'

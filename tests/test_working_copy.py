@@ -12,7 +12,7 @@ class GitVersionTest(unittest.TestCase):
     def tearDown(self):
         self.wc = None
 
-    @mock.patch('gachette.working_copy.get_current_git_hash', return_value="1A2B3C4D")
+    @mock.patch('gachette.lib.working_copy.get_current_git_hash', return_value="1A2B3C4D")
     def test_basic(self, git_hash_mock):
         version = self.wc.get_version_from_git()
         self.assertEqual(version,
@@ -92,7 +92,7 @@ class PrepareTest(unittest.TestCase):
     def tearDown(self):
         self.wc = None
 
-    @mock.patch('gachette.utils.run', return_value=run_failed(True))
+    @mock.patch('gachette.lib.utils.run', return_value=run_failed(True))
     def test_prepare_environment_default(self, utils_run_mock):
         """
         Prepare not existing folder
@@ -104,7 +104,7 @@ class PrepareTest(unittest.TestCase):
                                 [mock.call("test -d %s" % folder),
                                  mock.call("mkdir -p %s" % folder)])
 
-    @mock.patch('gachette.utils.run', return_value=run_failed(False))
+    @mock.patch('gachette.lib.utils.run', return_value=run_failed(False))
     def test_prepare_environment_existing(self, utils_run_mock):
         """
         Prepare existing folder
@@ -116,7 +116,7 @@ class PrepareTest(unittest.TestCase):
                             [mock.call("test -d %s" % folder),
                              mock.call("rm -rf %s/*" % folder)])
 
-    @mock.patch('gachette.working_copy.run', return_value=run_failed(True))
+    @mock.patch('gachette.lib.working_copy.run', return_value=run_failed(True))
     def test_checkout_clone(self, fabric_run_mock):
         # This URL does not exist. For test only
         folder = self.wc.working_copy
@@ -133,7 +133,7 @@ class PrepareTest(unittest.TestCase):
                  mock.call('git submodule --quiet update'),
                  mock.call('git rev-parse HEAD')])
 
-    @mock.patch('gachette.working_copy.run', return_value=run_failed(False))
+    @mock.patch('gachette.lib.working_copy.run', return_value=run_failed(False))
     def test_checkout_update(self, fabric_run_mock):
         # This URL does not exist. For test only
         folder = self.wc.working_copy
@@ -157,7 +157,7 @@ class BuildTest(unittest.TestCase):
     def tearDown(self):
         self.wc = None
 
-    @mock.patch('gachette.working_copy.run')
+    @mock.patch('gachette.lib.working_copy.run')
     def test_build(self, fabric_run_mock):
         app_version = '1.1.0'
         webcallback = 'http://garnison.dev:8080/stacks/1234/build_cb'
