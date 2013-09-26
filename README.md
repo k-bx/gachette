@@ -74,29 +74,23 @@ Now adding a package to the stack. We need to specify the package information as
 
 Configuration (CLI)
 ===================
-To avoid repeating settings, you can use a dotted configuration file `~/.gachetterc`. It is based on the Fabric one, you can see
-the documentation there: http://fabric.readthedocs.org/en/latest/usage/fab.html#settings-files
+To avoid repeating settings, you can use a yaml file by specifying it as an
+option.
 
 For example:
 
-    $ cat ~/.gachetterc 
-    user=vagrant
-    build_host=0.0.0.0
+    $ cat examples/vagrant.yml
+    user:   vagrant
+    hosts:
+        -   0.0.0.0
+    $
+    $ gachette -c examples/vagrant.yml -l
+    ...
 
 Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gachette`.
 
-There is a command to initialize the file, just do `gachette init_config` and it will create the file (with some comments) if it doesn't exist.
+You can use this also to setup the settings for Fabric, using the 1 level deep syntax (like for `key_filename` for example).
 
-The configuration supports a dotted notation, so you can do:
-
-    projects.test_config.url=git@github.com:ops-hero/test_config.git
-    projects.test_application.url=git@github.com:ops-hero/test_application.git
-
-And it will generate a key `projects` with this dictionary as a value:
-
-    {'test_config': {'url': 'git...'}, 'test_application': {'url': 'git...'}}
-
-The default value are for connecting with a Vagrant VM (ip to be defined).
 
 Quick usage (CLI)
 =================

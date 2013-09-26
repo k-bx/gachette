@@ -1,5 +1,16 @@
+import os
 from fabric.api import run, settings
+import yaml
 
+
+def get_config(config_file):
+    """
+    Use to monkey patch fabric loading of settings to use yaml file
+    """
+    if os.path.exists(config_file):
+        return yaml.load(file(config_file, 'r'))
+
+    return {}
 
 def prepare_folder(folder, clean=True):
     """

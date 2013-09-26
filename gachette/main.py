@@ -2,21 +2,19 @@
 #code: utf-8
 
 import os
-import shutil
 import fabric.main
 from fabric.api import task, env
-from fabric.main import load_settings
 from fabric.utils import abort, puts
 
 from lib.working_copy import WorkingCopy
 from lib.stack import Stack
 from lib import get_version
-from lib.utils import expand_dotted_keys
+from lib.utils import get_config
 
 """
 Usage for a simple application repo. First we create the stack in a certain location:
 
-    fab -H vagrant@0.0.0.0 stack_create:foobar1,/var/gachette
+    fab -c vagrant@0.0.0.0 stack_create:foobar1,/var/gachette
 
 From now on, you can add as many as packages as you want for this stack.
 We clone the repository and checkout a specific branch:
@@ -33,33 +31,13 @@ Now adding a package to the stack. We need to specify the package information as
 
 """
 
-
-# load the rc file (needed hack: https://github.com/fabric/fabric/pull/586)
-env.rcfile = os.path.expanduser("~/.gachetterc")
-settings = load_settings(env.rcfile)
-if settings:
-    # expand the dotted keys: {"foo.bar":5} => {"foo": {"bar": 5}} 
-    settings = expand_dotted_keys(settings)
-    env.update(settings)
-    if 'build_host' in env:
-        env.hosts = [env.build_host]
+# monkey patch this to load yaml
+fabric.main.load_settings = get_config
 
 # allow the usage of ssh config file by fabric
 env.use_ssh_config = True
 env.forward_agent = True
 
-@task
-def init_config():
-    """
-    Create the .gachetterc if not there.
-    """
-    if os.path.exists(env.rcfile):
-        abort("""You already have a %s config file.
-        Before creating a new version (with maybe udpated comments), you should back it up and remove it.""" % env.rcfile)
-
-    shutil.copy("gachette/templates/gachetterc.txt", env.rcfile)
-    puts("""Congrats! you now have a configuration file available for you to edit!
-        Just open %s and follow the instruction.""" % env.rcfile)
 
 @task
 def version():
@@ -73,6 +51,8 @@ def stack_create(name, meta_path=None, from_stack=None):
     """
     # get the meta_path from .gachetterc
     meta_path = meta_path if 'meta_path' not in env else env.meta_path
+    if not meta_path:
+        abort("Please specify a `meta_path` or use a config file to define it")
     
     new_stack = Stack(name, meta_path=meta_path)
 

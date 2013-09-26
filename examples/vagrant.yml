@@ -2,25 +2,22 @@
 
 # Account used to connect to the build server.
 # Default is the current user.
-# user=vagrant
-
-# key_filename, fabric setting for SSH config
-# Default for Vagrant
-# key_filename=~/.vagrant.d/insecure_private_key
+user:           vagrant
+key_filename:   "~/.vagrant.d/insecure_private_key"
 
 # Host where the build are going to be launched.
-# build_host=192.168.3.201
+# IMPORTANT: only one and using this syntax (needs to be a list)
+hosts: 
+    -   "192.168.3.201"
 
 # Path where the debian packages will be stored after building.
 # To be used by the delivery mechanism (web).
-#
-# debs_path=/var/gachette/debs
+debs_path:      "/var/gachette/debs"
 
 # Path where the meta info of the debian packages and stack will
 # be stored after building (stacks, packages subfolder).
 # To be used by the delivery mechanism (web).
-#
-# meta_path=/var/gachette
+meta_path:      "/var/gachette"
 
 # Projects directive:
 # For each specific project you can define a couple of variables,
@@ -31,10 +28,12 @@
 # url which will point to the github repo
 # path_to_missile which will point to the path to the missile file in the project
 #
-# Example for test projects:
-#
-# projects.test_config.url=git@github.com:ops-hero/test_config.git
-# projects.test_config.path_to_missile=.missile.yml
-#
-# projects.test_application.url=git@github.com:ops-hero/test_application.git
-# projects.test_application.path_to_missile=.missile.yml
+# Example where <foo> is the arbitrary name of the project.
+# projects.<foo>.url=<repo url of the project>
+# projects.<foo>.path_to_missile=.missile.yml
+projects:
+    test_config:
+        url:        "git@github.com:ops-hero/test_config.git"
+
+    test_application:
+        url:        "git@github.com:ops-hero/test_application.git"
