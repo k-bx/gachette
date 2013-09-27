@@ -30,13 +30,22 @@ Concept
 
 `Stack` is an artefact that represents a list of packages in a specific version. It is versioned as well. It ensures
 consistency of the version dependencies. Deployments are only based on `stack`; a specific stack is deployed, therefore
-only the specified version of the packages are then installed. 
+only the specified version of the packages are then installed.
 
 For example:
 
 Stack 123 contains the config package version v1.0.0 and application package v2.0.0. The next stack, named 124, will
 contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
 of the configuration works with the new application.
+
+`Domain` is a type of stack. It basically groups functionally similar stack and defines which projects the stack should cover.
+They could share project.s
+
+For example:
+
+The domain `backend` contains the API web server, the queue consumers, the search system. While the domain `frontend` contains the
+mobile website, the user facing website.
+
 
 
 Usage (CLI)
@@ -55,7 +64,7 @@ Gachette is wrapping around some Fabric scripts. To see the list of commands ava
 
 First we create the stack in a certain location. Note that the stack can be anything (semantic version or tag/name):
 
-    gachette -H hero@192.168.1.5 stack_create:foobar1,/var/gachette
+    gachette -H hero@192.168.1.5 stack_create:main,foobar1,/var/gachette
 
 From now on, you can add as many as packages as you want for this stack, even overwrite a version of a certain package
 by a new one.
@@ -69,7 +78,7 @@ Now we build the packages (note: the name `test_config_first_build` is use as a 
 
 Now adding a package to the stack. We need to specify the package information as they came from the last command:
 
-    gachette -H hero@192.168.1.5 add_to_stack:dh-secret-sauce-live,1.0.0,dh-secret-sauce-live-1.0.0-all.deb,/var/gachette,foobar1
+    gachette -H hero@192.168.1.5 add_to_stack:main,dh-secret-sauce-live,1.0.0,dh-secret-sauce-live-1.0.0-all.deb,/var/gachette,foobar1
 
 
 Configuration (CLI)
@@ -126,6 +135,20 @@ Before installing the entry point, you can test the commands like this:
 
     $ workon gachette
     $ gachette/main.py -l
+
+Common issue:
+=============
+
+* No local forward agent:
+The symptoms, while running a remote command:
+
+      File "/home/deploy/.virtualenvs/deploy/local/lib/python2.7/site-packages/paramiko/agent.py", line 126, in _communicate
+        events = select([self._agent._conn, self.__inr], [], [], 0.5)
+    TypeError: argument must be an int, or have a fileno() method.
+
+This is due to the fact that there is no local SSH agent running. Just start a local one: `eval `ssh-agent && ssh-add ~/.ssh/id_rsa`.
+https://github.com/fabric/fabric/issues/642
+
 
 Todo
 ====

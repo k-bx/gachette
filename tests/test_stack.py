@@ -6,7 +6,7 @@ from gachette.lib.stack import Stack
 
 class StackTest(unittest.TestCase):
     def setUp(self):
-        self.stack = Stack('1.0.0', meta_path='/var/gachette')
+        self.stack = Stack('main', '1.0.0', meta_path='/var/gachette')
 
     def tearDown(self):
         self.stack = None
@@ -21,7 +21,7 @@ class StackTest(unittest.TestCase):
 
         pkg_folder_dst = "/var/gachette/packages/%s/version/%s" % \
                                                     (name, version)
-        stack_folder_dst = "/var/gachette/stacks/%s/packages/%s" % \
+        stack_folder_dst = "/var/gachette/domain/main/stacks/%s/packages/%s" % \
                                                     (self.stack.version, name)
 
         stack_run_mock.assert_has_calls(
