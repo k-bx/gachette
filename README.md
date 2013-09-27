@@ -38,6 +38,7 @@ Stack 123 contains the config package version v1.0.0 and application package v2.
 contains the version v1.0.1 for the config and v2.1.0 for the application. Like this we never have to worry if the v1.0.0
 of the configuration works with the new application.
 
+
 Usage (CLI)
 ===========
 Gachette is wrapping around some Fabric scripts. To see the list of commands available, run this:
@@ -73,22 +74,42 @@ Now adding a package to the stack. We need to specify the package information as
 
 Configuration (CLI)
 ===================
-To avoid repeating settings, you can use a dotted configuration file `~/.gachetterc`. It is based on the Fabric one, you can see
-the documentation there: http://fabric.readthedocs.org/en/latest/usage/fab.html#settings-files
+To avoid repeating settings, you can use a yaml file by specifying it as an
+option.
 
 For example:
 
-    $ cat ~/.gachetterc 
-    user=vagrant
-    build_host=0.0.0.0
+    $ cat examples/vagrant.yml
+    user:   vagrant
+    hosts:
+        -   0.0.0.0
+    $
+    $ gachette -c examples/vagrant.yml -l
+    ...
 
 Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gachette`.
 
-There is a command to initialize the file, just do `gachette init_config` and it will create the file (with some comments) if it doesn't exist.
+You can use this also to setup the settings for Fabric, using the 1 level deep syntax (like for `key_filename` for example).
 
 
-Usage (CLI)
-===========
+Quick usage (CLI)
+=================
+Once you have your configuration well setup (projects..., meta_path, debs_path), you can start using the `quick` command:
+
+    $ gachette quick:0.0.1,test_application
+    $ gachette quick:0.0.1,test_config,fix-option
+
+This will do the following:
+* check out the master (or any branch specified) for the project `test_app`; the url is taken from the configuration as `projects.test_app.url`.
+* build the packages into `debs_path` folder (coming from the config).
+* use the git commit hash as the version of the package (add the branch if specified).
+* add the packages built to the stack (in the `meta_path` specified in the config).
+
+Note that the stack need to be setup before hand via `stack_create`.
+
+
+Usage (as a library)
+====================
 You can also use Gachette programmatically as a python library.
 
     # to checkout a specific branch and build package out of it:
@@ -97,7 +118,14 @@ You can also use Gachette programmatically as a python library.
     # to create a stack and add packages to it:
     from gachette.api import Stack
 
-Look at the file `gachette/fabfile.py` for usage examples.
+Look at the file `gachette/main.py` for usage examples.
+
+Usage (CLI locally, for testing)
+================================
+Before installing the entry point, you can test the commands like this:
+
+    $ workon gachette
+    $ gachette/main.py -l
 
 Todo
 ====

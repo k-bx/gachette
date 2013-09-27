@@ -1,17 +1,17 @@
 import unittest
 import mock
 
-from gachette.stack import Stack
+from gachette.lib.stack import Stack
 
 
 class StackTest(unittest.TestCase):
     def setUp(self):
-        self.stack = Stack('1.0.0', target_folder='/var/gachette')
+        self.stack = Stack('1.0.0', meta_path='/var/gachette')
 
     def tearDown(self):
         self.stack = None
 
-    @mock.patch('gachette.stack.run')
+    @mock.patch('gachette.lib.stack.run')
     def test_stack(self, stack_run_mock):
         name = 'app'
         version = '1.1.1'

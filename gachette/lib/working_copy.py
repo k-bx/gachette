@@ -1,4 +1,5 @@
 import os
+import json
 from fabric.api import cd, run, settings
 
 from utils import prepare_folder
@@ -10,6 +11,22 @@ possible_version_type = {
     'service' : '--service-version',
     }
 
+
+def _sanitize_version(version):
+    """
+    Return the version string sanitized to pass as a DEB version.
+    everything except [a-zA-Z] [0-9] . -
+    """
+    sane_version = version.replace("_", "-")
+    return sane_version
+
+
+def get_current_git_hash(folder):
+    """
+    Return the hash of the current HEAD commit of this working copy.
+    """
+    with cd(folder):
+        return run("git rev-parse --verify --short HEAD")
 
 def checkout_branch(folder, url, branch):
     """
@@ -40,7 +57,9 @@ def build(path_to_missile,
                        output_path,
                        version_suffix,
                        webcallback_suffix)
-    run(command)
+    results = run(command)
+
+    return [json.loads(x[7:-1].replace("'",'"')) for x in results.split("\n") if x.startswith("Built: ")]
 
 
 def lint(path_to_missile):
@@ -68,6 +87,16 @@ class WorkingCopy(object):
         if base_folder is None:
             base_folder = os.path.join('/', 'tmp', 'gachette')
         self.working_copy = os.path.join(base_folder, 'working_copy', name)
+
+
+    def get_version_from_git(self, base_version="0.0.1", suffix=None):
+        """
+        Use the current commit hash as version revision.
+        """
+        git_rev = get_current_git_hash(self.working_copy)
+        version_suffix = "" if suffix is None else "-%s" % suffix
+        version = "%srev%s%s" % (base_version, git_rev, version_suffix)
+        return _sanitize_version(version)
 
 
     def set_version(self, app=None, env=None, service=None):
@@ -129,7 +158,8 @@ class WorkingCopy(object):
             path_to_missile = self.get_missile_path()
 
         with cd(self.working_copy):
-            build(path_to_missile,
+            results =build(path_to_missile,
                     output_path,
                     self.get_version_suffix(),
                     self.get_webcallback_suffix(webcallback))
+        return results
