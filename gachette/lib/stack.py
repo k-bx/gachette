@@ -72,7 +72,7 @@ class StackOperator(object):
         
         return True
 
-    def copy_old_stack(self, ld_stack, new_stack):
+    def copy_old_stack(self, old_stack, new_stack):
         """
         Copy stack folder into new one.
         """
