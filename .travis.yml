@@ -7,7 +7,6 @@ install:
 script:
   - "make test"
   - "gachette -h"
-  - "gachette init_config"
 
 notifications:
   email: false
