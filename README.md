@@ -127,6 +127,20 @@ Before installing the entry point, you can test the commands like this:
     $ workon gachette
     $ gachette/main.py -l
 
+Common issue:
+=============
+
+* No local forward agent:
+The symptoms, while running a remote command:
+
+      File "/home/deploy/.virtualenvs/deploy/local/lib/python2.7/site-packages/paramiko/agent.py", line 126, in _communicate
+        events = select([self._agent._conn, self.__inr], [], [], 0.5)
+    TypeError: argument must be an int, or have a fileno() method.
+
+This is due to the fact that there is no local SSH agent running. Just start a local one: `eval `ssh-agent && ssh-add ~/.ssh/id_rsa`.
+https://github.com/fabric/fabric/issues/642
+
+
 Todo
 ====
 * Able to create nested settings from the .gachetterc file (for project configuration).
