@@ -14,7 +14,7 @@ from lib.utils import get_config
 """
 Usage for a simple application repo. First we create the stack in a certain location:
 
-    fab -c vagrant@0.0.0.0 stack_create:foobar1,/var/gachette
+    fab -c vagrant@0.0.0.0 stack_create:main,foobar1,/var/gachette
 
 From now on, you can add as many as packages as you want for this stack.
 We clone the repository and checkout a specific branch:
@@ -27,7 +27,7 @@ Now we build the packages (note: the name is use as a key). Location where the p
 
 Now adding a package to the stack. We need to specify the package information as they came from the last command:
 
-    fab -H vagrant@0.0.0.0 add_to_stack:dh-secret-sauce-live,1.0.0,dh-secret-sauce-live-1.0.0-all.deb,/var/gachette,foobar1
+    fab -H vagrant@0.0.0.0 add_to_stack:main,dh-secret-sauce-live,1.0.0,dh-secret-sauce-live-1.0.0-all.deb,/var/gachette,foobar1
 
 """
 
@@ -45,7 +45,7 @@ def version():
 
 
 @task
-def stack_create(name, meta_path=None, from_stack=None):
+def stack_create(domain, name, meta_path=None, from_stack=None):
     """
     Create a new stack. From old one if specified.
     """
@@ -54,11 +54,11 @@ def stack_create(name, meta_path=None, from_stack=None):
     if not meta_path:
         abort("Please specify a `meta_path` or use a config file to define it")
     
-    new_stack = Stack(name, meta_path=meta_path)
+    new_stack = Stack(domain, name, meta_path=meta_path)
 
     if not new_stack.is_persisted():
         if from_stack:
-            old_stack = Stack(from_stack)
+            old_stack = Stack(domain, from_stack, meta_path=meta_path)
             new_stack.clone_from(old_stack)
         else:
             new_stack.persist()
@@ -107,7 +107,7 @@ def build(name,
 
 
 @task
-def add_to_stack(name, version, file_name, meta_path, stack_version):
+def add_to_stack(domain, name, version, file_name, meta_path, stack_version):
     """
     Add created package to stack and reference packages.
     <name> actual name of the package.
@@ -119,7 +119,7 @@ def add_to_stack(name, version, file_name, meta_path, stack_version):
     # get the meta_path from .gachetterc
     meta_path = meta_path if 'meta_path' not in env else env.meta_path
     
-    stack = Stack(stack_version, meta_path=meta_path)
+    stack = Stack(domain, stack_version, meta_path=meta_path)
     stack.add_package(name, version, file_name)
 
 
@@ -133,34 +133,37 @@ def show_config():
 
 
 @task
-def quick(stack_version, project_name, branch="master", url=None, debs_path=None, meta_path=None):
+def quick(domain, stack_version, project_name, branch="master", url=None, path_to_missile=None, debs_path=None, meta_path=None):
     """
     One-command to build and add to stack a specific branch.
-    Depends heavily on pre-configuration via `.gachetterc`.
+    Depends heavily on pre-configuration via config file.
     Package version are set from Git commit.
 
+    <domain> domain where the stack will be registered to (some kind of type for stack).
     <stack_version> version of the stack to attach the package to.
     <project_name> name of the project.
     <branch> is the branch to actually checkout.
     <url> is the url of the repo in github.
+    <path_to_missile> is the path to the missile file in the project that will be used by trebuchet to build packages.
     <debs_path> path to where the DEB package should be created into.
     <meta_path> path to the stacks and other meta information related to package
     """
-    # Get value from .gachetterc
+    # Get value for the project, complain otherwise
     meta_path = meta_path if 'meta_path' not in env else env.meta_path
     debs_path = debs_path if 'debs_path' not in env else env.debs_path
+    url = url if "projects" not in env or project_name not in env.projects or 'url' not in env.projects[project_name] else env.projects[project_name]['url']
+    path_to_missile = path_to_missile if "projects" not in env or project_name not in env.projects or 'path_to_missile' not in env.projects[project_name] else env.projects[project_name]['path_to_missile']
+    
+    if not meta_path or not debs_path:
+        abort("Please specify a meta_path/debs_path or add it approprietly in a config file")
 
-    # Get value for the project, complain otherwise
-    if 'projects' not in env:
-        abort("Please enable create a projects directive in .gachetterc for at least 1 project: `projects.foo.url=git@github:bar/foo.git`")
-    if project_name not in env.projects:
-        abort("Please enable the projects directive for this specific project: `projects.%s.url=...`" % project_name)
-    url = env.projects[project_name]['url']
-    path_to_missile = None if 'path_to_missile' not in env.projects[project_name] else env.projects[project_name]['path_to_missile']
+    if not url:
+        abort("Please specify a url or add it approprietly in a config file: projects.%s.url" % project_name)
+
     name = project_name if branch is None else project_name+"_"+branch
 
     # use existing stack only (create one manually)
-    new_stack = Stack(stack_version, meta_path=meta_path)
+    new_stack = Stack(domain, stack_version, meta_path=meta_path)
     if not new_stack.is_persisted():
         abort("""Please create a new stack first, using: `gachette stack_create`""")
 

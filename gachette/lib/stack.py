@@ -6,8 +6,9 @@ class Stack(object):
     """
     Representation of a stack of projects/services of the build server.
     """
-    def __init__(self, stack_version, operator=None, meta_path=None):
+    def __init__(self, domain, stack_version, operator=None, meta_path=None):
         self.version = stack_version
+        self.domain = domain
 
         if operator is None:
             self.operator = StackOperator(meta_path)
@@ -52,18 +53,18 @@ class StackOperator(object):
     def _get_reference_package_folder(self, name, version):
         return os.path.join(self.target_folder, "packages", name, "version", version)
 
-    def _get_stack_folder(self, stack_version):
-        return os.path.join(self.target_folder, "stacks", stack_version)
+    def _get_stack_folder(self, domain, stack_version):
+        return os.path.join(self.target_folder, "domain", domain, "stacks", stack_version)
 
-    def _get_stack_package_folder(self, stack_version, pkg_name):
-        return os.path.join(self._get_stack_folder(stack_version), "packages", pkg_name)
+    def _get_stack_package_folder(self, domain, stack_version, pkg_name):
+        return os.path.join(self._get_stack_folder(domain, stack_version), "packages", pkg_name)
 
 
     def test_stack_exists(self, stack):
         """
         Check if stack folder exists on the filesystem.
         """
-        stack_path = self._get_stack_folder(stack.version)
+        stack_path = self._get_stack_folder(stack.domain, stack.version)
 
         with settings(warn_only=True):
             if run("test -d %s" % stack_path).failed:
@@ -75,8 +76,8 @@ class StackOperator(object):
         """
         Copy stack folder into new one.
         """
-        new_stack_path = self._get_stack_folder(new_stack.version)
-        old_stack_path = self._get_stack_folder(old_stack.version)
+        new_stack_path = self._get_stack_folder(new_stack.domain, new_stack.version)
+        old_stack_path = self._get_stack_folder(old_stack.domain, old_stack.version)
 
         run("mkdir -p %s" % new_stack_path)
         run("cp -R %s/* %s" % (old_stack_path, new_stack_path))
@@ -86,7 +87,7 @@ class StackOperator(object):
         """
         Create empty folder.
         """
-        new_stack_path = self._get_stack_folder(new_stack.version)
+        new_stack_path = self._get_stack_folder(new_stack.domain, new_stack.version)
         run("mkdir -p %s/packages/" % new_stack_path)
         
 
@@ -103,6 +104,6 @@ class StackOperator(object):
         """
         Registers a built package in the stack.
         """
-        folder_dst = self._get_stack_package_folder(stack.version, pkg_name)
+        folder_dst = self._get_stack_package_folder(stack.domain, stack.version, pkg_name)
         run("mkdir -p %s" % folder_dst)
         run("echo %s > %s/version" % (pkg_version, folder_dst))
