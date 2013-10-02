@@ -1,5 +1,5 @@
 import os
-from fabric.api import run, settings
+from fabric.api import run, settings, abort
 
 
 class Stack(object):
@@ -32,7 +32,6 @@ class Stack(object):
         """
         Clone an old stack into a new one (even if exists already).
         """
-        self.operator.persist_stack(self)
         self.operator.copy_old_stack(old_stack, self)
 
     def persist(self):
@@ -69,7 +68,6 @@ class StackOperator(object):
         with settings(warn_only=True):
             if run("test -d %s" % stack_path).failed:
                 return False
-        
         return True
 
     def copy_old_stack(self, old_stack, new_stack):
@@ -79,6 +77,8 @@ class StackOperator(object):
         new_stack_path = self._get_stack_folder(new_stack.domain, new_stack.version)
         old_stack_path = self._get_stack_folder(old_stack.domain, old_stack.version)
 
+        if not self.test_stack_exists(old_stack):
+            abort("%s:%s does not exist under %s" % (old_stack.domain, old_stack.version, old_stack_path))
         run("mkdir -p %s" % new_stack_path)
         run("cp -R %s/* %s" % (old_stack_path, new_stack_path))
 
