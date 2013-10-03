@@ -70,9 +70,9 @@ From now on, you can add as many as packages as you want for this stack, even ov
 by a new one.
 We clone the repository and checkout a specific branch:
 
-    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-config/test_config,master
+    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-hero/test_config,master
 
-Now we build the packages (note: the name `test_config_first_build` is use as a key). Location where the packages should end up is specify:
+Now we build the packages (note: the name `test_config_first_build` is used as a key). Location where the packages should end up is specify:
 
     gachette -H hero@192.168.1.5 build:test_config_first_build,/var/gachette/debs
 
@@ -105,8 +105,9 @@ Quick usage (CLI)
 =================
 Once you have your configuration well setup (projects..., meta_path, debs_path), you can start using the `quick` command:
 
-    $ gachette quick:0.0.1,test_application
-    $ gachette quick:0.0.1,test_config,fix-option
+    $ gachette quick:<domain>,<stack>,<project_name>
+    $ gachette quick:default,0.0.1,test_application
+    $ gachette quick:otherdomain,0.0.1,test_config,fix-option
 
 This will do the following:
 * check out the master (or any branch specified) for the project `test_app`; the url is taken from the configuration as `projects.test_app.url`.
