@@ -65,16 +65,16 @@ def stack_create(domain, name, meta_path=None, from_stack=None):
 
 
 @task
-def prepare(name, url=None, branch='master'):
+def prepare(name, url=None, ref='origin/master'):
     """
     Prepare the working copy remotely for the project.
     <name> of the working copy folder.
     <url> is the url of the repo in github.
-    <branch> is the branch to actually checkout.
+    <ref> is the branch/tag/rev that will be actually check out
     """
     wc = WorkingCopy(name)
     wc.prepare_environment()
-    return wc.checkout_working_copy(url, branch)
+    return wc.checkout_working_copy(url, ref)
 
 
 @task
@@ -133,7 +133,7 @@ def show_config():
 
 
 @task
-def quick(domain, stack_version, project_name, branch="master", url=None, path_to_missile=None, debs_path=None, meta_path=None):
+def quick(domain, stack_version, project_name, ref="origin/master", url=None, path_to_missile=None, debs_path=None, meta_path=None):
     """
     One-command to build and add to stack a specific branch.
     Depends heavily on pre-configuration via config file.
@@ -160,7 +160,7 @@ def quick(domain, stack_version, project_name, branch="master", url=None, path_t
     if not url:
         abort("Please specify a url or add it approprietly in a config file: projects.%s.url" % project_name)
 
-    name = project_name if branch is None else project_name+"_"+branch
+    name = project_name if branch is None else project_name+"_"+ref.replace("/", "-")
 
     # use existing stack only (create one manually)
     new_stack = Stack(domain, stack_version, meta_path=meta_path)
@@ -170,10 +170,10 @@ def quick(domain, stack_version, project_name, branch="master", url=None, path_t
     # Checkout specific branch and build
     wc = WorkingCopy(name)
     wc.prepare_environment()
-    wc.checkout_working_copy(url, branch)
+    wc.checkout_working_copy(url, ref)
 
     # set version based on the git commit
-    suffix = "" if branch is None else branch
+    suffix = "" if branch is None else branch.replace("/", "-")
     version = wc.get_version_from_git(suffix=suffix)
     wc.set_version(app=version, env=version, service=version)
 

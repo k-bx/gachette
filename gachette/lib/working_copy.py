@@ -28,7 +28,7 @@ def get_current_git_hash(folder):
     with cd(folder):
         return run("git rev-parse --verify --short HEAD")
 
-def checkout_branch(folder, url, branch):
+def checkout_branch(folder, url, ref):
     """
     Checks out the given branch from the GitHub repo at :attr:`url`.
     Returns the long SHA of the branch's HEAD.
@@ -39,7 +39,7 @@ def checkout_branch(folder, url, branch):
 
     with cd(folder):
         run("git fetch --quiet origin")
-        run("git reset --quiet --hard origin/%s" % branch)
+        run("git reset --quiet --hard %s" % ref)
         run("git submodule --quiet init")
         run("git submodule --quiet update")
         return run('git rev-parse HEAD')
@@ -129,12 +129,12 @@ class WorkingCopy(object):
         """
         prepare_folder(self.working_copy, clean=True)
 
-    def checkout_working_copy(self, url, branch):
+    def checkout_working_copy(self, url, ref):
         """
         Checkout code in the working copy. Returns the long SHA of the
         branch's HEAD
         """
-        return checkout_branch(self.working_copy, url, branch)
+        return checkout_branch(self.working_copy, url, ref)
 
     def get_missile_path(self):
         return os.path.join(self.working_copy, ".missile.yml")
