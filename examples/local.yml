@@ -2,22 +2,20 @@
 
 # Account used to connect to the build server.
 # Default is the current user.
-user:           vagrant
-key_filename:   "~/.vagrant.d/insecure_private_key"
 
 # Host where the build are going to be launched.
 # IMPORTANT: only one and using this syntax (needs to be a list)
 hosts: 
-    -   "192.168.3.205"
+    -   "0.0.0.0"
 
 # Path where the debian packages will be stored after building.
 # To be used by the delivery mechanism (web).
-debs_path:      "/var/gachette/debs"
+debs_path:      "/tmp/gachette/debs"
 
 # Path where the meta info of the debian packages and stack will
 # be stored after building (stacks, packages subfolder).
 # To be used by the delivery mechanism (web).
-meta_path:      "/var/gachette"
+meta_path:      "/tmp/gachette"
 
 # Projects directive:
 # For each specific project you can define a couple of variables,
