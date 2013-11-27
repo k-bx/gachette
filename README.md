@@ -68,9 +68,11 @@ First we create the stack in a certain location. Note that the stack can be anyt
 
 From now on, you can add as many as packages as you want for this stack, even overwrite a version of a certain package
 by a new one.
-We clone the repository and checkout a specific branch:
+We clone the repository and checkout a specific branch/tag/commit:
 
-    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-hero/test_config,master
+    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-hero/test_config,origin/test_a
+    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-hero/test_config,v1.4
+    gachette -H hero@192.168.1.5 prepare:test_config_first_build,git@github.com:ops-hero/test_config,origin/0e57698750b05ea
 
 Now we build the packages (note: the name `test_config_first_build` is used as a key). Location where the packages should end up is specify:
 
@@ -100,6 +102,9 @@ Which will allow you to remove the `-H vagrant@0.0.0.0` option when calling `gac
 
 You can use this also to setup the settings for Fabric, using the 1 level deep syntax (like for `key_filename` for example).
 
+There are 2 sample config files in `examples/` folder:
+* `vagrant.yml` to use from your local machine and trigger build on a vagrant machine (default is the one from `caserne`).
+* `local.yml` to use and build from your local machine (you should be able to ssh onto your local machine `ssh 0.0.0.0`).
 
 Quick usage (CLI)
 =================
@@ -107,7 +112,7 @@ Once you have your configuration well setup (projects..., meta_path, debs_path),
 
     $ gachette quick:<domain>,<stack>,<project_name>
     $ gachette quick:default,0.0.1,test_application
-    $ gachette quick:otherdomain,0.0.1,test_config,fix-option
+    $ gachette quick:otherdomain,0.0.1,test_config,ref=origin/fix-option
 
 This will do the following:
 * check out the master (or any branch specified) for the project `test_app`; the url is taken from the configuration as `projects.test_app.url`.
