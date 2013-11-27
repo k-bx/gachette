@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 TESTS=$(shell find tests/ -name "*.py")
-VERSION=$(shell python -c "import gachette; print gachette.get_version()")
+VERSION=$(shell python -c "import gachette.lib; print gachette.lib.get_version()")
 
 test:
 	nosetests ${TESTS}
