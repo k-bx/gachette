@@ -4,6 +4,7 @@
 # Default is the current user.
 user:           vagrant
 key_filename:   "~/.vagrant.d/insecure_private_key"
+use_ssh_config: false
 
 # Host where the build are going to be launched.
 # IMPORTANT: only one and using this syntax (needs to be a list)

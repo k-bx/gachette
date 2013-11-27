@@ -35,7 +35,6 @@ Now adding a package to the stack. We need to specify the package information as
 fabric.main.load_settings = get_config
 
 # allow the usage of ssh config file by fabric
-env.use_ssh_config = True
 env.forward_agent = True
 
 
