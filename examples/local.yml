@@ -2,6 +2,7 @@
 
 # Account used to connect to the build server.
 # Default is the current user.
+use_ssh_config: true
 
 # Host where the build are going to be launched.
 # IMPORTANT: only one and using this syntax (needs to be a list)

@@ -34,10 +34,9 @@ Now adding a package to the stack. We need to specify the package information as
 # monkey patch this to load yaml
 fabric.main.load_settings = get_config
 
-# allow the usage of ssh config file by fabric
-env.use_ssh_config = True
 env.forward_agent = True
 
+trebuchet_bin = "trebuchet" if 'trebuchet_bin' not in env else env.trebuchet_bin
 
 @task
 def version():
@@ -103,7 +102,7 @@ def build(name,
 
     wc = WorkingCopy(name)
     wc.set_version(app=app_version, env=env_version, service=service_version)
-    wc.build(debs_path, path_to_missile, webcallback)
+    wc.build(debs_path, path_to_missile, webcallback, trebuchet_bin=trebuchet_bin)
 
 
 @task
@@ -160,7 +159,7 @@ def quick(domain, stack_version, project_name, ref="origin/master", url=None, pa
     if not url:
         abort("Please specify a url or add it approprietly in a config file: projects.%s.url" % project_name)
 
-    name = project_name if branch is None else project_name+"_"+ref.replace("/", "-")
+    name = project_name if ref is None else project_name+"_"+ref.replace("/", "-")
 
     # use existing stack only (create one manually)
     new_stack = Stack(domain, stack_version, meta_path=meta_path)
@@ -173,11 +172,11 @@ def quick(domain, stack_version, project_name, ref="origin/master", url=None, pa
     wc.checkout_working_copy(url, ref)
 
     # set version based on the git commit
-    suffix = "" if branch is None else branch.replace("/", "-")
+    suffix = "" if ref is None else ref.replace("/", "-")
     version = wc.get_version_from_git(suffix=suffix)
     wc.set_version(app=version, env=version, service=version)
 
-    results = wc.build(debs_path, path_to_missile)
+    results = wc.build(debs_path, path_to_missile, trebuchet_bin=trebuchet_bin)
     print "results: ", results
     # TODO extract package build results properly
     for item in results:
