@@ -48,12 +48,14 @@ def checkout_branch(folder, url, ref):
 def build(path_to_missile,
           output_path,
           version_suffix,
-          webcallback_suffix):
+          webcallback_suffix,
+          trebuchet_bin="trebuchet"):
     """
     Actually trigger the build via trebuchet.
     """
-    command = "trebuchet build %s --arch amd64 --output %s %s %s" \
-                    % (path_to_missile,
+    command = "%s build %s --arch amd64 --output %s %s %s" \
+                    % (trebuchet_bin,
+                       path_to_missile,
                        output_path,
                        version_suffix,
                        webcallback_suffix)
@@ -62,12 +64,12 @@ def build(path_to_missile,
     return [json.loads(x[7:-1].replace("'",'"')) for x in results.split("\n") if x.startswith("Built: ")]
 
 
-def lint(path_to_missile):
+def lint(path_to_missile, trebuchet_bin="trebuchet"):
     """
     Lint the configuration and output the list of packages that are actually going to be built.
     """
     package_list_leader = 'Packages to be built: '
-    output = run("trebuchet lint %s" % path_to_missile)
+    output = run("%s lint %s" % (trebuchet_bin, path_to_missile))
     for line in output.splitlines():
         if line.startswith(package_list_leader):
             names = line[len(package_list_leader):]
@@ -139,7 +141,7 @@ class WorkingCopy(object):
     def get_missile_path(self):
         return os.path.join(self.working_copy, ".missile.yml")
 
-    def lint(self, path_to_missile=None):
+    def lint(self, path_to_missile=None, trebuchet_bin='trebuchet'):
         """
         Lint the package configuration with trebuchet and return the list of
         package names that will be built.
@@ -148,9 +150,10 @@ class WorkingCopy(object):
             path_to_missile = self.get_missile_path()
 
         with cd(self.working_copy):
-            return lint(path_to_missile)
+            return lint(path_to_missile, trebuchet_bin=trebuchet_bin)
 
-    def build(self, output_path, path_to_missile=None, webcallback=None):
+    def build(self, output_path, path_to_missile=None, webcallback=None,
+            trebuchet_bin="trebuchet"):
         """
         Build packages with trebuchet.
         """
@@ -161,5 +164,6 @@ class WorkingCopy(object):
             results =build(path_to_missile,
                     output_path,
                     self.get_version_suffix(),
-                    self.get_webcallback_suffix(webcallback))
+                    self.get_webcallback_suffix(webcallback),
+                    trebuchet_bin=trebuchet_bin)
         return results

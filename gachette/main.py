@@ -34,9 +34,9 @@ Now adding a package to the stack. We need to specify the package information as
 # monkey patch this to load yaml
 fabric.main.load_settings = get_config
 
-# allow the usage of ssh config file by fabric
 env.forward_agent = True
 
+trebuchet_bin = "trebuchet" if 'trebuchet_bin' not in env else env.trebuchet_bin
 
 @task
 def version():
@@ -102,7 +102,7 @@ def build(name,
 
     wc = WorkingCopy(name)
     wc.set_version(app=app_version, env=env_version, service=service_version)
-    wc.build(debs_path, path_to_missile, webcallback)
+    wc.build(debs_path, path_to_missile, webcallback, trebuchet_bin=trebuchet_bin)
 
 
 @task
@@ -176,7 +176,7 @@ def quick(domain, stack_version, project_name, ref="origin/master", url=None, pa
     version = wc.get_version_from_git(suffix=suffix)
     wc.set_version(app=version, env=version, service=version)
 
-    results = wc.build(debs_path, path_to_missile)
+    results = wc.build(debs_path, path_to_missile, trebuchet_bin=trebuchet_bin)
     print "results: ", results
     # TODO extract package build results properly
     for item in results:
