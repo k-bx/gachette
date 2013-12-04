@@ -121,14 +121,14 @@ class PrepareTest(unittest.TestCase):
         # This URL does not exist. For test only
         folder = self.wc.working_copy
         url = 'https://github.com/organizations/gachette/test_project'
-        branch = 'test-branch'
+        branch = 'origin/test-branch'
         self.wc.checkout_working_copy(url, branch)
 
         fabric_run_mock.assert_has_calls(
                 [mock.call('test -d %s/.git' % folder),
                  mock.call('git clone --depth=100 --quiet %s %s' % (url, folder)),
                  mock.call('git fetch --quiet origin'),
-                 mock.call('git reset --quiet --hard origin/%s' % branch),
+                 mock.call('git reset --quiet --hard %s' % branch),
                  mock.call('git submodule --quiet init'),
                  mock.call('git submodule --quiet update'),
                  mock.call('git rev-parse HEAD')])
@@ -138,13 +138,13 @@ class PrepareTest(unittest.TestCase):
         # This URL does not exist. For test only
         folder = self.wc.working_copy
         url = 'https://github.com/organizations/gachette/test_project'
-        branch = 'test-branch'
+        branch = 'origin/test-branch'
         self.wc.checkout_working_copy(url, branch)
 
         fabric_run_mock.assert_has_calls(
                 [mock.call('test -d %s/.git' % folder),
                  mock.call('git fetch --quiet origin'),
-                 mock.call('git reset --quiet --hard origin/%s' % branch),
+                 mock.call('git reset --quiet --hard %s' % branch),
                  mock.call('git submodule --quiet init'),
                  mock.call('git submodule --quiet update'),
                  mock.call('git rev-parse HEAD')])
