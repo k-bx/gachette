@@ -39,7 +39,7 @@ def checkout_branch(folder, url, ref):
 
     with cd(folder):
         run("git fetch --quiet origin")
-        run("git reset --quiet --hard %s" % ref)
+        run("git reset --quiet --hard -- %s" % ref)
         run("git submodule --quiet init")
         run("git submodule --quiet update")
         return run('git rev-parse HEAD')
